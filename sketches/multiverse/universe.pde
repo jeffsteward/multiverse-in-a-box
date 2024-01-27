@@ -6,6 +6,7 @@ class Universe {
   PShape[] rings;
   PVector[] starPositions; //track the position of each star
   color[] colors;   //track the color of each star
+  String name;
   
   Universe(int d) {
     density = d;
@@ -18,28 +19,37 @@ class Universe {
     colors = new color[density];
     
     _generateStars();
-    _generateGround();
+    _generateGrid();
+    // _generateMountains();
+
+    name = "U-" + density + "-" + random(0,100);
   };
   
+  String name() {
+    return name;
+  }
+
   void _generateStars() {
     int a = 255;
     int r = 0;
     int g = 100 + int(random(-5, 5));
     int b = 114 + int(random(-5, 5));
     
+    int scaleFactor = int(height*0.015);
+
     for (int i=0;i<density;i++) {
       // calculate the position
       starPositions[i] = new PVector(random(0,width), random(0,height/1.7));
            
       // calculate the size
-      int size = 25*(i+1);
+      int size = scaleFactor*(i+1);
            
       // calculate the color
       r = 10+(i*12);
       color argb = a << 24 | r << 16 | g << 8 | b;
       colors[i] = argb;
-
-      // create the shape
+      
+            // create the shape
       stars[i] = createShape(ELLIPSE, 0, 0, size, size);
       stars[i].setFill(colors[i]);
       stars[i].setStroke(false);
@@ -52,7 +62,33 @@ class Universe {
     }
   }
 
-  void _generateGround() {
+  void _generateMountains() {
+    int peakCount = int(random(2, 10));
+    float colorStep = 200/peakCount;
+    
+    float peakXPadding = width*0.05; //padding is 5% of the screen width
+    float peakYPadding = height*0.05; // peak can rise 5% above the horizon
+
+    ground = createShape(GROUP);
+
+    for (int i=0; i<=peakCount; i++) {
+      PShape m = createShape();
+      m.setStroke(false);
+      m.setFill(color(i*colorStep));
+      // m.setFill(color(150, i*colorStep, 150));
+
+      //vertex order: left side base->mountain peak->right side base
+      m.beginShape();
+      m.vertex(random(-1000,-100), height);
+      m.vertex(random(peakXPadding, width-peakXPadding), random(horizon-peakYPadding, horizon+(horizon/2)));
+      m.vertex(width+random(100, 1000), height);
+      m.endShape(CLOSE);
+
+      ground.addChild(m);
+    }
+  }
+
+  void _generateGrid() {
     // lots of magic numbers to cleanup in this function
     ground = createShape(GROUP);
 
@@ -66,8 +102,9 @@ class Universe {
     cl.setStroke(200);
     ground.addChild(cl);
 
-    int spacing = width/20;
-    int x = (width/2)+70;
+    int spacing = int(width*0.01); 
+    int centerOffset = int(width*0.02); 
+    int x = (width/2)+centerOffset;
     for (int i=5;i<25; i++) {
       float factor = pow(i/1.2,3.75);
 
@@ -75,9 +112,9 @@ class Universe {
       l.setStroke(color(10*(factor/1.2)));
       ground.addChild(l);
 
-      x += 70;
+      x += centerOffset;
     }
-    x = (width/2)-70;
+    x = (width/2)-centerOffset;
     for (int i=5;i<25; i++) {
       float factor = pow(i/1.2,3.75);
       
@@ -85,7 +122,7 @@ class Universe {
       l.setStroke(color(10*(factor/1.2)));
       ground.addChild(l);
 
-      x -= 70;
+      x -= centerOffset;
     }    
 
     // horizontal grid
@@ -101,8 +138,6 @@ class Universe {
   void update() {};
   
   void display() {
-    shape(ground);
-    
     for (int i=0; i<density; i++) {
       float fuzziness = random(0.99,1.01);
       
@@ -113,5 +148,7 @@ class Universe {
       shape(rings[i]);
       popMatrix();
     }  
+
+    shape(ground);
   };
 }
