@@ -34,6 +34,18 @@ void keyPressed() {
     case 'h':
       showHUD = !showHUD;
       break;
+    case 'a':
+      u[currentUniverse].panLeft();
+      break;
+    case 'd':
+      u[currentUniverse].panRight();
+      break;
+    case 'w':
+      u[currentUniverse].zoomIn();
+      break;
+    case 's':
+      u[currentUniverse].zoomOut();
+      break;
     default:
       break;	
   }
@@ -42,5 +54,6 @@ void keyPressed() {
 void hud() {
   if (showHUD) {
     text(u[currentUniverse].name(), 40, 40);
+    text(u[currentUniverse].info(), 40, 60);
   }
 }

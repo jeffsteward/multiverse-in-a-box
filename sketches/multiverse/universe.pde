@@ -7,6 +7,8 @@ class Universe {
   PVector[] starPositions; //track the position of each star
   color[] colors;   //track the color of each star
   String name;
+  float zoom = 1.0;
+  float viewportXPos = 0.0; 
   
   Universe(int d) {
     density = d;
@@ -27,6 +29,10 @@ class Universe {
   
   String name() {
     return name;
+  }
+
+  String info() {
+    return "Zoom: " + zoom;
   }
 
   void _generateStars() {
@@ -135,6 +141,22 @@ class Universe {
     }    
 }
   
+  void zoomIn() {
+    zoom +=0.02;
+  }
+
+  void zoomOut() {
+    zoom -=0.02;
+  }
+
+  void panLeft() {
+    viewportXPos -=1.0;
+  }
+
+  void panRight() {
+    viewportXPos +=1.0;
+  }
+
   void update() {};
   
   void display() {
@@ -142,8 +164,8 @@ class Universe {
       float fuzziness = random(0.99,1.01);
       
       pushMatrix();
-      translate(starPositions[i].x, starPositions[i].y);
-      scale(fuzziness);
+      translate(starPositions[i].x + viewportXPos, starPositions[i].y);
+      scale(zoom + fuzziness);
       shape(stars[i]);
       shape(rings[i]);
       popMatrix();
