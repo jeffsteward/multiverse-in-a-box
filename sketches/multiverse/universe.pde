@@ -21,8 +21,8 @@ class Universe {
     colors = new color[density];
     
     _generateStars();
-    _generateGrid();
-    // _generateMountains();
+    // _generateGrid();
+    _generateMountains();
 
     name = "U-" + density + "-" + random(0,100);
   };
@@ -45,13 +45,15 @@ class Universe {
 
     for (int i=0;i<density;i++) {
       // calculate the position
-      starPositions[i] = new PVector(random(0,width), random(0,height/1.7));
+      starPositions[i] = new PVector(random(-width,width*2), random(0,height/1.7), i);
            
       // calculate the size
-      int size = scaleFactor*(i+1);
+      // int size = scaleFactor*(i+1);
+      int size = int(scaleFactor*(starPositions[i].z+1));
            
       // calculate the color
-      r = 10+(i*12);
+      // r = 10+(i*12);
+      r = 10 + int(starPositions[i].z * 12);
       color argb = a << 24 | r << 16 | g << 8 | b;
       colors[i] = argb;
       
@@ -162,9 +164,10 @@ class Universe {
   void display() {
     for (int i=0; i<density; i++) {
       float fuzziness = random(0.99,1.01);
+      float pace = starPositions[i].z;
       
       pushMatrix();
-      translate(starPositions[i].x + viewportXPos, starPositions[i].y);
+      translate(starPositions[i].x + (viewportXPos * pace), starPositions[i].y);
       scale(zoom + fuzziness);
       shape(stars[i]);
       shape(rings[i]);
