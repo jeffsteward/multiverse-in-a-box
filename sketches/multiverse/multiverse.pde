@@ -46,6 +46,9 @@ void keyPressed() {
     case 's':
       u[currentUniverse].zoomOut();
       break;
+    case 'r':
+      u[currentUniverse].resetView();
+      break;
     default:
       break;	
   }

@@ -2,6 +2,7 @@ class Universe {
   float horizon = height/2;
   int density = 0;
   PShape ground;
+  PShape mountains;
   PShape[] stars;
   PShape[] rings;
   PVector[] starPositions; //track the position of each star
@@ -21,7 +22,7 @@ class Universe {
     colors = new color[density];
     
     _generateStars();
-    // _generateGrid();
+    _generateGrid();
     _generateMountains();
 
     name = "U-" + density + "-" + random(0,100);
@@ -32,7 +33,7 @@ class Universe {
   }
 
   String info() {
-    return "Zoom: " + zoom;
+    return "X: " + viewportXPos + ", Zoom: " + zoom;
   }
 
   void _generateStars() {
@@ -77,7 +78,7 @@ class Universe {
     float peakXPadding = width*0.05; //padding is 5% of the screen width
     float peakYPadding = height*0.05; // peak can rise 5% above the horizon
 
-    ground = createShape(GROUP);
+    mountains = createShape(GROUP);
 
     for (int i=0; i<=peakCount; i++) {
       PShape m = createShape();
@@ -92,7 +93,7 @@ class Universe {
       m.vertex(width+random(100, 1000), height);
       m.endShape(CLOSE);
 
-      ground.addChild(m);
+      mountains.addChild(m);
     }
   }
 
@@ -148,7 +149,9 @@ class Universe {
   }
 
   void zoomOut() {
-    zoom -=0.02;
+    if (zoom > -0.9) {
+      zoom -=0.02;
+    }
   }
 
   void panLeft() {
@@ -159,12 +162,17 @@ class Universe {
     viewportXPos +=1.0;
   }
 
+  void resetView() {
+    zoom = 1.0;
+    viewportXPos = 0.0;
+  }
+
   void update() {};
   
   void display() {
     for (int i=0; i<density; i++) {
       float fuzziness = random(0.99,1.01);
-      float pace = starPositions[i].z;
+      float pace = starPositions[i].z/2;
       
       pushMatrix();
       translate(starPositions[i].x + (viewportXPos * pace), starPositions[i].y);
@@ -174,6 +182,7 @@ class Universe {
       popMatrix();
     }  
 
-    shape(ground);
+    shape(mountains);
+    // shape(ground);
   };
 }
