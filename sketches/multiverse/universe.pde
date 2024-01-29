@@ -8,8 +8,8 @@ class Universe {
   PVector[] starPositions; //track the position of each star
   color[] colors;   //track the color of each star
   String name;
-  float zoom = 1.0;
-  float viewportXPos = 0.0; 
+  float zoom;
+  float viewportXPos; 
   
   Universe(int d) {
     density = d;
@@ -24,6 +24,7 @@ class Universe {
     _generateStars();
     _generateGrid();
     _generateMountains();
+    _initialViewport();
 
     name = "U-" + density + "-" + random(0,100);
   };
@@ -34,6 +35,11 @@ class Universe {
 
   String info() {
     return "X: " + viewportXPos + ", Zoom: " + zoom;
+  }
+
+  void _initialViewport() {
+    zoom = 1.0;
+    viewportXPos = 0.0;     
   }
 
   void _generateStars() {
@@ -149,7 +155,7 @@ class Universe {
   }
 
   void zoomOut() {
-    if (zoom > -0.9) {
+    if (zoom > -0.8) {
       zoom -=0.02;
     }
   }
@@ -163,8 +169,7 @@ class Universe {
   }
 
   void resetView() {
-    zoom = 1.0;
-    viewportXPos = 0.0;
+    _initialViewport();
   }
 
   void update() {};
