@@ -1,8 +1,10 @@
 class Universe {
   float horizon = height/2;
   int density = 0;
+  int starFieldSize = 50;
   PShape ground;
   PShape mountains;
+  PVector[] starField;
   PShape[] stars;
   PShape[] rings;
   PVector[] starPositions; //track the position of each star
@@ -21,6 +23,7 @@ class Universe {
     starPositions = new PVector[density]; //<>//
     colors = new color[density];
     
+    _generateStarField();
     _generateStars();
     _generateGrid();
     _generateMountains();
@@ -40,6 +43,13 @@ class Universe {
   void _initialViewport() {
     zoom = 1.0;
     viewportXPos = 0.0;     
+  }
+
+  void _generateStarField() {
+    starField = new PVector[starFieldSize];
+    for (int i=0; i<starFieldSize; i++) {
+      starField[i] = new PVector(random(0,width), random(0,height));
+    }
   }
 
   void _generateStars() {
@@ -175,6 +185,11 @@ class Universe {
   void update() {};
   
   void display() {
+    for (int i=0; i<starField.length; i++) {
+      stroke(255);
+      point(starField[i].x, starField[i].y);
+    }
+
     for (int i=0; i<density; i++) {
       float fuzziness = random(0.99,1.01);
       float pace = starPositions[i].z/2;
