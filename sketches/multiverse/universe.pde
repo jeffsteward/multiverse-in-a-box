@@ -10,8 +10,7 @@ class Universe {
   PVector[] starPositions; //track the position of each star
   color[] colors;   //track the color of each star
   String name;
-  float zoom;
-  float viewportXPos; 
+  PVector _viewportPosition;
   
   Universe(int d) {
     density = d;
@@ -37,12 +36,15 @@ class Universe {
   }
 
   String info() {
-    return "X: " + viewportXPos + ", Zoom: " + zoom;
+    return "X: " + _viewportPosition.x + ", Y: " + _viewportPosition.y + ", Z: " + _viewportPosition.z;
+  }
+
+  PVector viewportPosition() {
+    return _viewportPosition;
   }
 
   void _initialViewport() {
-    zoom = 1.0;
-    viewportXPos = 0.0;     
+    _viewportPosition = new PVector(0, 0, 0);
   }
 
   void _generateStarField() {
@@ -161,21 +163,29 @@ class Universe {
 }
   
   void zoomIn() {
-    zoom +=0.02;
+    _viewportPosition.z +=0.02;
   }
 
   void zoomOut() {
-    if (zoom > -0.8) {
-      zoom -=0.02;
+    if (_viewportPosition.z > -0.8) {
+      _viewportPosition.z -=0.02;
     }
   }
 
   void panLeft() {
-    viewportXPos -=1.0;
+    _viewportPosition.x +=1.0;
   }
 
   void panRight() {
-    viewportXPos +=1.0;
+    _viewportPosition.x -=1.0;
+  }
+
+  void panUp() {
+    _viewportPosition.y +=1.0;
+  }
+
+  void panDown() {
+    _viewportPosition.y -=1.0;
   }
 
   void resetView() {
@@ -195,8 +205,9 @@ class Universe {
       float pace = starPositions[i].z/2;
       
       pushMatrix();
-      translate(starPositions[i].x + (viewportXPos * pace), starPositions[i].y);
-      scale(zoom + fuzziness);
+      translate(starPositions[i].x + (_viewportPosition.x * pace), 
+                starPositions[i].y + (_viewportPosition.y * pace));
+      scale(_viewportPosition.z + fuzziness);
       shape(stars[i]);
       shape(rings[i]);
       popMatrix();
