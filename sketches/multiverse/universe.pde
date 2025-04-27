@@ -1,16 +1,24 @@
 class Universe {
+  PVector _viewportPosition;
+  int _width = width*3;
+  int _height = height*3;
   float horizon = height/2;
+  
   int density = 0;
-  int starFieldSize = 50;
+  int starFieldSize = int(random(100, 200));
+  
   PShape ground;
   PShape mountains;
+  
   PVector[] starField;
+  
   PShape[] stars;
   PShape[] rings;
   PVector[] starPositions; //track the position of each star
+  float[] starWeights;
   color[] colors;   //track the color of each star
+  
   String name;
-  PVector _viewportPosition;
   
   Universe(int d) {
     density = d;
@@ -19,7 +27,8 @@ class Universe {
 
     stars = new PShape[density];
     rings = new PShape[density];
-    starPositions = new PVector[density]; //<>//
+    starPositions = new PVector[density]; 
+    starWeights = new float[density];
     colors = new color[density];
     
     _generateStarField();
@@ -28,7 +37,7 @@ class Universe {
     _generateMountains();
     _initialViewport();
 
-    name = "U-" + density + "-" + random(0,100);
+    name = "U-" + density + "-" + starFieldSize + "-" + random(0,100);
   };
   
   String name() {
@@ -50,7 +59,7 @@ class Universe {
   void _generateStarField() {
     starField = new PVector[starFieldSize];
     for (int i=0; i<starFieldSize; i++) {
-      starField[i] = new PVector(random(0,width), random(0,height));
+      starField[i] = new PVector(random(0,_width), random(0,_height));
     }
   }
 
@@ -65,7 +74,8 @@ class Universe {
     for (int i=0;i<density;i++) {
       // calculate the position
       starPositions[i] = new PVector(random(-width,width*2), random(0,height/1.7), i);
-           
+      starWeights[i] = starPositions[i].z/2;
+
       // calculate the size
       // int size = scaleFactor*(i+1);
       int size = int(scaleFactor*(starPositions[i].z+1));
@@ -76,7 +86,7 @@ class Universe {
       color argb = a << 24 | r << 16 | g << 8 | b;
       colors[i] = argb;
       
-            // create the shape
+      // create the shape
       stars[i] = createShape(ELLIPSE, 0, 0, size, size);
       stars[i].setFill(colors[i]);
       stars[i].setStroke(false);
@@ -197,16 +207,15 @@ class Universe {
   void display() {
     for (int i=0; i<starField.length; i++) {
       stroke(255);
-      point(starField[i].x, starField[i].y);
+      point(starField[i].x + _viewportPosition.x/20, starField[i].y + + _viewportPosition.y/20);
     }
 
     for (int i=0; i<density; i++) {
       float fuzziness = random(0.99,1.01);
-      float pace = starPositions[i].z/2;
       
       pushMatrix();
-      translate(starPositions[i].x + (_viewportPosition.x * pace), 
-                starPositions[i].y + (_viewportPosition.y * pace));
+      translate(starPositions[i].x + (_viewportPosition.x * starWeights[i]), 
+                starPositions[i].y + (_viewportPosition.y * starWeights[i]));
       scale(_viewportPosition.z + fuzziness);
       shape(stars[i]);
       shape(rings[i]);
